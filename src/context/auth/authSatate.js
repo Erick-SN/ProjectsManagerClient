@@ -21,6 +21,28 @@ const AuthState = (props) => {
   };
   const [state, dispatch] = useReducer(authReducer, initialSatate);
 
+  //Return the user loged
+  const userAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      //Send the token by header
+      tokenAuth(token);
+    }
+    try {
+      const response = await axiosClient.get('/api/auth');
+      // console.log(response);
+      dispatch({
+        type: GET_USER,
+        payload: response.data.user,
+      });
+    } catch (error) {
+      // console.log(error.response);
+      dispatch({
+        type: LOGIN_FAILURE,
+      });
+    }
+  };
+
   //User register
   const userRegister = async (data) => {
     try {
@@ -41,27 +63,6 @@ const AuthState = (props) => {
       dispatch({
         type: REGISTER_ERROR,
         payload: alert,
-      });
-    }
-  };
-  //Return the user loged
-  const userAuth = async () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      //Send the token by header
-      tokenAuth(token);
-    }
-    try {
-      const response = await axiosClient.get('/api/auth');
-      // console.log(response);
-      dispatch({
-        type: GET_USER,
-        payload: response.data.user,
-      });
-    } catch (error) {
-      // console.log(error.response);
-      dispatch({
-        type: LOGIN_FAILURE,
       });
     }
   };
